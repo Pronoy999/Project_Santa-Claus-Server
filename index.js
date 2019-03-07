@@ -3,32 +3,39 @@ const url = require('url');
 const handlers = require('./handlers');
 const StringDecoder = require('string_decoder').StringDecoder;
 const constants = require('./Constants');
+const helpers = require('./helpers');
 const router = {
     'users': handlers.users
 };
-const unifedServer = (req, res) => {
-    const parsedUrl = url.parse(req.uri, true);
+/**
+ * Core Server method.
+ * @param req: the Request Object.
+ * @param res: The Response Object.
+ */
+const unifiedServer = (req, res) => {
+    const parsedUrl = url.parse(req.url, true);
     const pathName = parsedUrl.pathname;
     let trimmedPath = pathName.replace(/^\/+|\/+$/g, '');
     const route = trimmedPath.split("/")[0];
-    const method = parsedUrl.method.toLowerCase();
+    const method = req.method.toLowerCase();
     const queryString = parsedUrl.query;
     const decoder = new StringDecoder('utf-8');
     let postData = '';
-    const chosenHandler = typeof (router[route]) === 'object' ? router[route] : handlers.notFound;
+    const chosenHandler = typeof (router[route]) !== 'undefined' ? router[route] : handlers.notFound;
     req.on('data', data => {
         postData += decoder.write(data);
     });
     req.on('end', () => {
         postData += decoder.end();
+        postData = helpers.parseToJSON(postData);
+        const dataObject = {
+            queryString,
+            method,
+            path: trimmedPath,
+            postData
+        };
+        execHandler(dataObject);
     });
-    const dataObject = {
-        queryString,
-        method,
-        path: trimmedPath,
-        postData
-    };
-    execHandler(dataObject);
 
     /**
      * Method to Send the Response.
@@ -62,7 +69,7 @@ const unifedServer = (req, res) => {
     }
 };
 const httpServer = http.createServer((req, res) => {
-    unifedServer(req, res);
+    unifiedServer(req, res);
 });
 /**
  * Server Listening.
