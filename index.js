@@ -1,0 +1,72 @@
+const http = require('http');
+const url = require('url');
+const handlers = require('./handlers');
+const StringDecoder = require('string_decoder').StringDecoder;
+const constants = require('./Constants');
+const router = {
+    'users': handlers.users
+};
+const unifedServer = (req, res) => {
+    const parsedUrl = url.parse(req.uri, true);
+    const pathName = parsedUrl.pathname;
+    let trimmedPath = pathName.replace(/^\/+|\/+$/g, '');
+    const route = trimmedPath.split("/")[0];
+    const method = parsedUrl.method.toLowerCase();
+    const queryString = parsedUrl.query;
+    const decoder = new StringDecoder('utf-8');
+    let postData = '';
+    const chosenHandler = typeof (router[route]) === 'object' ? router[route] : handlers.notFound;
+    req.on('data', data => {
+        postData += decoder.write(data);
+    });
+    req.on('end', () => {
+        postData += decoder.end();
+    });
+    const dataObject = {
+        queryString,
+        method,
+        path: trimmedPath,
+        postData
+    };
+    execHandler(dataObject);
+
+    /**
+     * Method to Send the Response.
+     * @param statusCode
+     * @param responseObject
+     */
+    function sendResponse(statusCode, responseObject) {
+        statusCode = typeof (statusCode) === 'number' ? statusCode : 400;
+        responseObject = typeof (responseObject) === 'object' ? JSON.stringify(responseObject) : JSON.stringify("{}");
+        try {
+            res.setHeader('Content-Type', 'application/json');
+            res.writeHead(statusCode, constants.headers);
+            res.end(responseObject);
+            console.log('Returning: ', responseObject, "For Path ", trimmedPath, statusCode);
+        } catch (e) {
+            console.log(e);
+        }
+    }
+
+    /**
+     * Method to Handle the request.
+     * @param data
+     */
+    function execHandler(data) {
+        const promise = chosenHandler(data);
+        promise.then(responseObject => {
+            sendResponse(responseObject[0], responseObject[1]);
+        }).catch(responseObject => {
+            sendResponse(responseObject[0], responseObject[1]);
+        });
+    }
+};
+const httpServer = http.createServer((req, res) => {
+    unifedServer(req, res);
+});
+/**
+ * Server Listening.
+ */
+httpServer.listen(7069, () => {
+    console.log("Server Listening on Port 7069");
+});
