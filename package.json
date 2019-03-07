@@ -2,6 +2,7 @@
   "name": "Project Santa Claus",
   "version": "1.0.0",
   "dependencies": {
+    "aws-sdk": "^2.416.0",
     "moment": "latest",
     "moment-timezone": "^0.5.23",
     "mysql": "latest"

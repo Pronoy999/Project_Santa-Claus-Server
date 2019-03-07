@@ -2,6 +2,7 @@ const moment = require('moment');
 const tz = require('moment-timezone');
 const database = require('./databaseHandler');
 const constants = require('./Constants');
+const sns = require('./snsLib');
 const user = {};
 /**
  * Method to add the new User.
@@ -37,6 +38,33 @@ user.add = function (dataObject) {
             });
         } else {
             reject([400, {'res': constants.insufficientData}]);
+        }
+    });
+};
+/**
+ * Method to handle the Login Request.
+ * @param dataObject
+ */
+user.login = function (dataObject) {
+    return new Promise((resolve, reject) => {
+        if (dataObject.method === 'post') {
+            const phoneNumber = typeof (dataObject.postData.phone) === 'string' ? dataObject.postData.phone : false;
+            if (phoneNumber) {
+                sns.sendOTP(phoneNumber).then(number => {
+                    const query = "INSERT INTO otp VALUES ('" + phoneNumber + "'," + number + ")";
+                    database.query(query).then(response => {
+                        resolve([200, {'res': true}]);
+                    }).catch(err => {
+                        console.error(err.stack);
+                        reject([500, {'res': constants.errorMessage}]);
+                    });
+                }).catch(err => {
+                    console.error(err.stack);
+                    reject([500, {'res': constants.errorMessage}]);
+                });
+            } else {
+                reject([400, {'res': constants.insufficientData}]);
+            }
         }
     });
 };

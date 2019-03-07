@@ -22,6 +22,11 @@ handlers.users = function (dataObject) {
         if (dataObject.method === 'post') {
             promise = users.add(dataObject);
         } else {
+            switch (dataObject.path) {
+                case "login":
+                    promise = users.login;
+                    break;
+            }
             reject([400, {'res': constants.invalidRequestMessage}]);
         }
         promise.then(response => {
