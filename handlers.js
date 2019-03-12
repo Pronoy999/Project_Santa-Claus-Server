@@ -38,6 +38,7 @@ handlers.users = function (dataObject) {
 };
 handlers.msg = function (dataObject) {
     return new Promise((resolve, reject) => {
+        let promise;
 
     });
 };
