@@ -1,10 +1,10 @@
 const database = {};
 const mysql = require('mysql');
 const pool = mysql.createPool({
-    host: 'YOUR_HOST_NAME',
-    user: 'USER_NAME',
-    database: 'DATABASE_NAME',
-    password: 'DATABASE_PASSWORD',
+    host: 'hx-db.cy5gosef4el7.ap-south-1.rds.amazonaws.com',
+    user: 'db_admin',
+    database: 'santa_claus',
+    password: 'hxadmin123',
     port: '3306'
 });
 /**
