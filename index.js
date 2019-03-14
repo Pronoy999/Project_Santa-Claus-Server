@@ -5,7 +5,8 @@ const StringDecoder = require('string_decoder').StringDecoder;
 const constants = require('./Constants');
 const helpers = require('./helpers');
 const router = {
-    'users': handlers.users
+    'users': handlers.users,
+    'message': handlers.msg
 };
 /**
  * Core Server method.

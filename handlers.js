@@ -1,5 +1,6 @@
 const handlers = {};
 const users = require('./Users');
+const message = require('./messages');
 const constants = require('./Constants');
 /**
  * Default Handler.
@@ -36,10 +37,24 @@ handlers.users = function (dataObject) {
         });
     });
 };
+/**
+ * Handler to handle the messages request.
+ * @param dataObject: The Request Object.
+ * @returns {Promise<any>}
+ */
 handlers.msg = function (dataObject) {
     return new Promise((resolve, reject) => {
         let promise;
-
+        switch (dataObject.path) {
+            case "get":
+                promise = message.get(dataObject);
+                break;
+            case "recent":
+                promise = message.recent(dataObject);
+                break;
+            default:
+                reject([400, {'res': constants.invalidPath}]);
+        }
     });
 };
 

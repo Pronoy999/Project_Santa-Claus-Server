@@ -23,8 +23,38 @@ messages.get = function (dataObject) {
                     reject([500, {'res': constants.errorMessage}]);
                 });
             } else {
-                reject([500, {'res': constants.insufficientData}];
+                reject([500, {'res': constants.insufficientData}]);
             }
         }
     });
 };
+/**
+ * Method to fetch the Recent messages for a user.
+ * @param dataObject: The Request Object.
+ * @returns {Promise<any>}
+ */
+messages.recent = function (dataObject) {
+    return new Promise((resolve, reject) => {
+        if (dataObject.method === 'post') {
+            const email = typeof (dataObject.postData.email) === 'string' && dataObject.postData.email.length > 0 ? dataObject.postData.email : false;
+            const query = "SELECT * FROM message_data WHERE id IN " +
+                "(SELECT max(id) as id FROM" +
+                " (SELECT id,receiver_email as email FROM message_data WHERE " +
+                "sender_email = '" + email + "' UNION SELECT id, sender_email as " +
+                "email FROM message_data WHERE receiver_email LIKE '" + email + "') as T " +
+                "GROUP BY email);";
+            database.query(query).then(msgData => {
+                resolve([200, {'res': msgData}]);
+            }).catch(err => {
+                console.error(err.stack);
+                reject([500, {'res': constants.errorMessage}]);
+            });
+        } else {
+            reject([400, {'res': constants.invalidRequestMessage}]);
+        }
+    });
+};
+/**
+ * Exporting Messages.
+ */
+module.exports = messages;
