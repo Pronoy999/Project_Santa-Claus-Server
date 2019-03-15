@@ -1,7 +1,7 @@
 const handlers = {};
 const users = require('./Users');
-const message = require('./messages');
 const constants = require('./Constants');
+const msg=require('./messagesHandler');
 /**
  * Default Handler.
  * @param dataObject
@@ -45,15 +45,19 @@ handlers.users = function (dataObject) {
 handlers.msg = function (dataObject) {
     return new Promise((resolve, reject) => {
         let promise;
-        switch (dataObject.path) {
-            case "get":
-                promise = message.get(dataObject);
-                break;
-            case "recent":
-                promise = message.recent(dataObject);
-                break;
-            default:
-                reject([400, {'res': constants.invalidPath}]);
+        if (dataObject.method === 'post') {
+            promise = msg.new(dataObject);
+        } else {
+            switch (dataObject.path) {
+                case "get":
+                    promise = msg.get(dataObject);
+                    break;
+                case "recent":
+                    promise = msg.recent(dataObject);
+                    break;
+                default:
+                    reject([400, {'res': constants.invalidPath}]);
+            }
         }
     });
 };

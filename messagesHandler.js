@@ -1,4 +1,6 @@
-const messages = {};
+const messagesHandler = {};
+const moment = require('moment');
+const tz = require('moment-timezone');
 const constants = require('./Constants');
 const database = require('./databaseHandler');
 /**
@@ -6,7 +8,7 @@ const database = require('./databaseHandler');
  * @param dataObject: the Request Object.
  * @returns {Promise<any>}
  */
-messages.get = function (dataObject) {
+messagesHandler.get = function (dataObject) {
     return new Promise((resolve, reject) => {
         if (dataObject.method === 'post') {
             const senderID = typeof (dataObject.postData.sender_email) === 'string' &&
@@ -29,11 +31,11 @@ messages.get = function (dataObject) {
     });
 };
 /**
- * Method to fetch the Recent messages for a user.
+ * Method to fetch the Recent messagesHandler for a user.
  * @param dataObject: The Request Object.
  * @returns {Promise<any>}
  */
-messages.recent = function (dataObject) {
+messagesHandler.recent = function (dataObject) {
     return new Promise((resolve, reject) => {
         if (dataObject.method === 'post') {
             const email = typeof (dataObject.postData.email) === 'string' && dataObject.postData.email.length > 0 ? dataObject.postData.email : false;
@@ -55,6 +57,37 @@ messages.recent = function (dataObject) {
     });
 };
 /**
+ * Method to insert new Messages.
+ * @param dataObject: The Request Object.
+ * @returns {Promise<any>}
+ */
+messagesHandler.new = function (dataObject) {
+    return new Promise((resolve, reject) => {
+        const senderEmail = typeof (dataObject.postData.sender_email) === 'string' &&
+        dataObject.postData.sender_email.length > 0 ? dataObject.postData.sender_email : false;
+        const receiverEmail = typeof (dataObject.postData.receiver_email) === 'string' &&
+        dataObject.postData.receiver_email.length > 0 ? dataObject.postData.receiver_email : false;
+        const msg = typeof (dataObject.postData.message) === 'string' ? dataObject.postData.message : false;
+        const url = typeof (dataObject.postData.url) === 'string' &&
+        dataObject.postData.url.length > 0 ? dataObject.postData.url : false;
+        const formattedTime = moment.unix((Math.floor(new Date().getTime() / 1000)))
+            .tz('Asia/Kolkata').format(constants.dateFormat).split(' ');
+        if (senderEmail && receiverEmail && url) {
+            const query = "INSERT INTO message_data VALUES ('','" + messagesHandler + "','"
+                + url + "','" + senderEmail + "','" + receiverEmail + "','" +
+                formattedTime[1] + "','" + formattedTime[0] + "')";
+            database.query(query).then(insertData => {
+                resolve([200, {'res': true}]);
+                //TODO: Send Notification to receiver.
+            }).catch(err => {
+                reject([500, {'res': constants.errorMessage}]);
+            });
+        } else {
+            reject([400, {'res': constants.insufficientData}]);
+        }
+    });
+};
+/**
  * Exporting Messages.
  */
-module.exports = messages;
+module.exports = messagesHandler;
