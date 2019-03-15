@@ -18,6 +18,7 @@ const unifiedServer = (req, res) => {
     const pathName = parsedUrl.pathname;
     let trimmedPath = pathName.replace(/^\/+|\/+$/g, '');
     const route = trimmedPath.split("/")[0];
+    trimmedPath = trimmedPath.substr(trimmedPath.indexOf("/") + 1);
     const method = req.method.toLowerCase();
     const queryString = parsedUrl.query;
     const decoder = new StringDecoder('utf-8');
