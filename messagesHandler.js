@@ -105,7 +105,7 @@ function sendMessageToUser(email, msg) {
             console.log("Couldn't send Sms.");
         });
     }).catch(err => {
-
+        console.error(err.stack);
     });
 }
 
