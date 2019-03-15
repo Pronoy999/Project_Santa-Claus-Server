@@ -3,6 +3,7 @@ const moment = require('moment');
 const tz = require('moment-timezone');
 const constants = require('./Constants');
 const database = require('./databaseHandler');
+const sns = require('./snsLib');
 /**
  * Method to get the Messages between 2 users.
  * @param dataObject: the Request Object.
@@ -78,6 +79,7 @@ messagesHandler.new = function (dataObject) {
                 formattedTime[1] + "','" + formattedTime[0] + "')";
             database.query(query).then(insertData => {
                 resolve([200, {'res': true}]);
+                sendMessageToUser(receiverEmail, "You have a new message pending.");
                 //TODO: Send Notification to receiver.
             }).catch(err => {
                 reject([500, {'res': constants.errorMessage}]);
@@ -87,6 +89,26 @@ messagesHandler.new = function (dataObject) {
         }
     });
 };
+
+/**
+ * Method to send text to receiver.
+ * @param email: The Receiver email.
+ * @param msg: The Message that is to be send.
+ */
+function sendMessageToUser(email, msg) {
+    const query = "SELECT * FROM user_data WHERE email LIKE '" + email + "'";
+    database.query(query).then(userData => {
+        const phone = userData[0].phone;
+        sns.sendMessage(phone, msg).then(() => {
+            console.log("User notified.");
+        }).catch(err => {
+            console.log("Couldn't send Sms.");
+        });
+    }).catch(err => {
+
+    });
+}
+
 /**
  * Exporting Messages.
  */
