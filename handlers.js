@@ -1,16 +1,16 @@
 const handlers = {};
 const users = require('./Users');
 const constants = require('./Constants');
-const msg=require('./messagesHandler');
+const msg = require('./messagesHandler');
 /**
  * Default Handler.
  * @param dataObject
  * @returns {Promise<any>}
  */
 handlers.notFound = function (dataObject) {
-    return new Promise((resolve, reject) => {
-        reject([400, {'res': constants.invalidPath}])
-    });
+   return new Promise((resolve, reject) => {
+      reject([400, {'res': constants.invalidPath}])
+   });
 };
 /**
  * Method to handle the Users response.
@@ -18,24 +18,24 @@ handlers.notFound = function (dataObject) {
  * @returns {Promise<any>}
  */
 handlers.users = function (dataObject) {
-    return new Promise((resolve, reject) => {
-        let promise;
-        if (dataObject.method === 'post') {
-            promise = users.add(dataObject);
-        } else {
-            switch (dataObject.path) {
-                case "login":
-                    promise = users.login;
-                    break;
-            }
-            reject([400, {'res': constants.invalidRequestMessage}]);
-        }
-        promise.then(response => {
-            resolve(response);
-        }).catch(err => {
-            reject(err);
-        });
-    });
+   return new Promise((resolve, reject) => {
+      let promise;
+      if (dataObject.method === 'post') {
+         promise = users.add(dataObject);
+      } else {
+         switch (dataObject.path) {
+            case "login":
+               promise = users.login;
+               break;
+         }
+         reject([400, {'res': constants.invalidRequestMessage}]);
+      }
+      promise.then(response => {
+         resolve(response);
+      }).catch(err => {
+         reject(err);
+      });
+   });
 };
 /**
  * Handler to handle the messages request.
@@ -43,23 +43,23 @@ handlers.users = function (dataObject) {
  * @returns {Promise<any>}
  */
 handlers.msg = function (dataObject) {
-    return new Promise((resolve, reject) => {
-        let promise;
-        if (dataObject.method === 'post') {
-            promise = msg.new(dataObject);
-        } else {
-            switch (dataObject.path) {
-                case "get":
-                    promise = msg.get(dataObject);
-                    break;
-                case "recent":
-                    promise = msg.recent(dataObject);
-                    break;
-                default:
-                    reject([400, {'res': constants.invalidPath}]);
-            }
-        }
-    });
+   return new Promise((resolve, reject) => {
+      let promise;
+      if (dataObject.method === 'post') {
+         promise = msg.new(dataObject);
+      } else {
+         switch (dataObject.path) {
+            case "get":
+               promise = msg.get(dataObject);
+               break;
+            case "recent":
+               promise = msg.recent(dataObject);
+               break;
+            default:
+               reject([400, {'res': constants.invalidPath}]);
+         }
+      }
+   });
 };
 
 module.exports = handlers;

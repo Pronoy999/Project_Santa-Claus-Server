@@ -1,10 +1,10 @@
 const messages = {};
 messages.errorMessage = "Error.";
 messages.headers = {
-    'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Methods': 'OPTIONS, POST, GET, PUT',
-    'Access-Control-Max-Age': 2592000,
-    'Access-Control-Allow-Headers': 'Content-Type'
+   'Access-Control-Allow-Origin': '*',
+   'Access-Control-Allow-Methods': 'OPTIONS, POST, GET, PUT',
+   'Access-Control-Max-Age': 2592000,
+   'Access-Control-Allow-Headers': 'Content-Type'
 };
 messages.tokenExpiredMessage = "Invalid Token or Token Expired.";
 messages.invalidRequestMessage = "Invalid Request Method.";
