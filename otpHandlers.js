@@ -42,12 +42,18 @@ otpHandler.verifyOTP = (dataObject) => {
       const query = "SELECT * FROM otp WHERE otp=" + otp + " AND phone = '" + mobile + "'";
       database.query(query).then(selectData => {
          if (selectData[0].phone === mobile && selectData[0].otp === Number(otp)) {
-            resolve([200, {'res': true}]);
+            const query = "SELECT * FROM user_data WHERE phone = '" + selectData[0].phone + "'";
+            database.query(query).then(userData => {
+               resolve([200, {'res': true, 'msg': userData[0]}]);
+            }).catch(err => {
+               console.log(err);
+               reject([500, {'res': false}]);
+            });
          } else {
-            resolve([500, {'res': false}]);
+            reject([500, {'res': false}]);
          }
       }).catch(err => {
-         resolve([500, {'res': constants.errorMessage}]);
+         reject([500, {'res': constants.errorMessage}]);
       });
    });
 };

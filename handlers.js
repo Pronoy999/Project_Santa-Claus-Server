@@ -68,20 +68,24 @@ handlers.users = function (dataObject) {
 handlers.msg = function (dataObject) {
    return new Promise((resolve, reject) => {
       let promise;
-      if (dataObject.method === 'post') {
-         promise = msg.new(dataObject);
-      } else {
-         switch (dataObject.path) {
-            case "get":
-               promise = msg.get(dataObject);
-               break;
-            case "recent":
-               promise = msg.recent(dataObject);
-               break;
-            default:
-               reject([400, {'res': constants.invalidPath}]);
+      switch (dataObject.path) {
+         case "get":
+            promise = msg.get(dataObject);
+            break;
+         case "recent":
+            promise = msg.recent(dataObject);
+            break;
+         default: {
+            if (dataObject.method === 'post') {
+               promise = msg.new(dataObject);
+            }
          }
       }
+      promise.then(response => {
+         resolve(response);
+      }).catch(err => {
+         reject(err);
+      })
    });
 };
 
