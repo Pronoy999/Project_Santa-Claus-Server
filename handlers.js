@@ -2,6 +2,7 @@ const handlers = {};
 const users = require('./Users');
 const constants = require('./Constants');
 const msg = require('./messagesHandler');
+const otpHandler = require('./otpHandlers');
 /**
  * Default Handler.
  * @param dataObject
@@ -10,6 +11,28 @@ const msg = require('./messagesHandler');
 handlers.notFound = function (dataObject) {
    return new Promise((resolve, reject) => {
       reject([400, {'res': constants.invalidPath}])
+   });
+};
+/**
+ * Handlers to handle the OTP requests.
+ * @param dataObject: The request object.
+ * @returns {Promise<any>}
+ */
+handlers.otp = (dataObject) => {
+   return new Promise((resolve, reject) => {
+      let promise;
+      if (dataObject.method === 'post') {
+         promise = otpHandler.requestOtp(dataObject);
+      } else if (dataObject.method === 'get') {
+         promise = otpHandler.verifyOTP(dataObject);
+      } else {
+         reject([400, {'res': constants.invalidPath}]);
+      }
+      promise.then(response => {
+         resolve(response);
+      }).catch(err => {
+         reject(err);
+      });
    });
 };
 /**

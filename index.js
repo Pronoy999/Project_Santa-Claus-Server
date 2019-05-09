@@ -6,7 +6,8 @@ const constants = require('./Constants');
 const helpers = require('./helpers');
 const router = {
    'users': handlers.users,
-   'message': handlers.msg
+   'message': handlers.msg,
+   'otp':handlers.otp
 };
 /**
  * Core Server method.
