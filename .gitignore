@@ -75,5 +75,5 @@ typings/
 .serverless
 .idea/vcs.xml
 .idea/workspace.xml
-/databaseHandler.js
-/snsLib.js
+#/snsLib.js
+#/databaseHandler.js
