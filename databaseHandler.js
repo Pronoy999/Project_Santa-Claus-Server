@@ -1,11 +1,11 @@
 const database = {};
 const mysql = require('mysql');
 const pool = mysql.createPool({
-    host: 'HOST_NAME',
-    user: 'USER_NAME',
-    database: 'DB_NAME',
-    password: 'DB_PASSWORD',
-    port: 'PORT'
+    host: 'hx-db.cy5gosef4el7.ap-south-1.rds.amazonaws.com',
+    user: 'db_admin',
+    database: 'santa_claus',
+    password: 'hxadmin123',
+    port: '3306'
 });
 /**
  * Method to make the Query.
