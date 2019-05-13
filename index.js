@@ -5,6 +5,7 @@ const StringDecoder = require('string_decoder').StringDecoder;
 const constants = require('./Constants');
 const helpers = require('./helpers');
 const router = {
+   'ping':handlers.ping,
    'users': handlers.users,
    'message': handlers.msg,
    'otp':handlers.otp

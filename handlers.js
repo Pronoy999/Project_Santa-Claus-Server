@@ -13,6 +13,11 @@ handlers.notFound = function (dataObject) {
       reject([400, {'res': constants.invalidPath}])
    });
 };
+handlers.ping = (dataObject) => {
+   return new Promise((resolve, reject) => {
+      resolve([200, {'res': 'Welcome to Santa Claus API.'}]);
+   });
+};
 /**
  * Handlers to handle the OTP requests.
  * @param dataObject: The request object.
