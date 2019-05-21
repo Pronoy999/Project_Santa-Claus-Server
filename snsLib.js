@@ -1,9 +1,9 @@
 const aws = require('aws-sdk');
 const sms = {};
 aws.config.update({
-   region: 'ap-southeast-1',
-   accessKeyId: 'AKIAJZLKRHVB7IYQIFWA',
-   secretAccessKey: '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'
+   region: 'AWS_REGION',
+   accessKeyId: 'AWS_ACCESS_KEY',
+   secretAccessKey: 'AWS_SECRET_ACCESS_KEY'
 });
 const sns = new aws.SNS();
 /**
