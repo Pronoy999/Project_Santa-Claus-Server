@@ -72,16 +72,17 @@ messagesHandler.new = function (dataObject) {
       const msg = typeof (dataObject.postData.message) === 'string' ? dataObject.postData.message : false;
       const url = typeof (dataObject.postData.url) === 'string' &&
       dataObject.postData.url.length > 0 ? dataObject.postData.url : false;
+      const originalSize = Number(dataObject.postData.original_size) > 0 ? dataObject.postData.original_size : false;
+      const compressed = Number(dataObject.postData.compressed_size) > 0 ? dataObject.postData.compressed_size : false;
       const formattedTime = moment.unix((Math.floor(new Date().getTime() / 1000)))
         .tz('Asia/Kolkata').format(constants.dateFormat).split(' ');
       if (senderEmail && receiverEmail && url) {
          const query = "INSERT INTO message_data VALUES ('','" + msg + "','"
            + url + "','" + senderEmail + "','" + receiverEmail + "','" +
-           formattedTime[1] + "','" + formattedTime[0] + "')";
+           formattedTime[1] + "','" + formattedTime[0] + "','" + originalSize + "','" + compressed + "')";
          database.query(query).then(insertData => {
             resolve([200, {'res': true}]);
             sendMessageToUser(receiverEmail, "You have a new message pending.");
-            //TODO: Send Notification to receiver.
          }).catch(err => {
             reject([500, {'res': constants.errorMessage}]);
          });
